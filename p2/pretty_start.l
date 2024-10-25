@@ -42,15 +42,14 @@ void write_directive();
 %option	noyywrap
 %option	yylineno
 
-quote	\'
-ditto	\"
+quote      \'[^\']*\'        
+ditto      \"[^\"]*\"       
 delim	
 ws	
-alpha
-digit
-oct	
-exp	
-hex	
+alpha      [a-zA-Z_] 
+digit      [0-9]             
+oct        0[0-7]*           
+hex        0[xX][0-9a-fA-F]+
 id	
 number	
 
@@ -60,15 +59,15 @@ number
 {ws}				{ /* no action and no return */ }
 {quote}([^']|\\')*{quote}	write_char();
 {ditto}([^"]|\\\")*{ditto}	write_string();
-something			write_oct();
+0[0-7]+			write_oct();
 something			write_hex();
-something			write_int();
+[0-9]+			write_int();  
 something	                write_fp();
 something	                write_id();
-left curly			write_begin();
-something			write_end();
-left_paren			write_open();
-something			write_close();
+\{			write_begin();
+\}			write_end();
+\(			write_open();
+\)			write_close();
 "["				write_bopen();
 "]"				write_bclose();
 ";"				write_sep();
