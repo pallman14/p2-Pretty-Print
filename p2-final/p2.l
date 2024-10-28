@@ -37,7 +37,6 @@ void write_sep();
 void write_op();
 void write_inline();
 void write_comment();
-void write_comma();
 void write_directive();
 
 %}
@@ -72,7 +71,7 @@ number	{digit}*\.{digit}*{exp}?
 "\["		write_bopen();
 "\]"		write_bclose();
 ";"		write_sep();
-","		write_comma();
+","		        |
 "="             |
 "+="            |
 "-="            |
@@ -122,10 +121,6 @@ int main() {
     myInit();
     // Starts HTML preformatted code block
     printf("<html><pre>\n");
-    // Outputs line number (d), left-aligned (-), occupying 'column' spaces
-    // column is initially 4, so outputs 1___
-    // Begins on line 0
-    printf("%-*d",column, line++);
     
     // Initiates pattern matching and respective actions
     yylex();
@@ -198,7 +193,7 @@ void write_char() {
 
 void write_string() {
     if (debug) {
-	fprintf(stderr, "write_string: %s\n", yytext);
+	    fprintf(stderr, "write_string: %s\n", yytext);
     }
     
     // String literals are styled in red
@@ -224,7 +219,7 @@ void write_oct() {
 
 void write_hex() {
     if (debug) {
-	fprintf(stderr, "write_hex: %s\n", yytext);
+	    fprintf(stderr, "write_hex: %s\n", yytext);
     }
     
     // Hexadecimal numbers are styled in brown and italicized
@@ -296,7 +291,7 @@ void write_id() {
     // Adds space after keywords but not after variables
     if (kw)  {
     	printf("</b>");
-	putchar(' ');
+	    putchar(' ');
     } else {
     	printf("</a>");
     }
@@ -305,6 +300,7 @@ void write_id() {
 void write_begin() {
     // Applies inline style, preferred over block style
     putchar(' ');
+    write_indent();
     write_html();
     // Increments indentation for the next line
     column += INDENT;
@@ -349,26 +345,16 @@ void write_bclose() {
 
 void write_sep() {
     if (debug) {
-	fprintf(stderr, "write_sep: %s\n", yytext);
+	    fprintf(stderr, "write_sep: %s\n", yytext);
     }
     // Outputs a semicolon; if inside parentheses or brackets,
     // appends a space; otherwise, moves to the next line
     write_html();
     if (!paren) {
-	write_indent();
+	    write_indent();
     } else  {
-	putchar(' ');
+	    putchar(' ');
     }
-}
-
-// Although unnecessary, improves readability of commas
-void write_comma() {
-    if (debug) {
-        fprintf(stderr, "write_comma: %s\n", yytext);
-    }
-    // Outputs a comma, followed by a space
-    write_html();
-    putchar(' ');
 }
 
 void write_op() {
@@ -399,7 +385,7 @@ void write_inline() {
 
 void write_comment() {
     if (debug) {
-	fprintf(stderr, "write_comment: %s\n", yytext);
+	    fprintf(stderr, "write_comment: %s\n", yytext);
     }
     
     // Activates inComment, so if there’s a newline in the comment, 
