@@ -359,7 +359,7 @@ void write_sep() {
 
 void write_op() {
     if (debug) {
-	fprintf(stderr, "write_op: %s\n", yytext);
+	    fprintf(stderr, "write_op: %s\n", yytext);
     }
     // Adds spaces around operators
     // Slightly inconvenient in some cases, e.g., ( *  * p), but suitable for this example
